@@ -4,196 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Syed Admin - Smart Billing</title>
-    
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-
     <style>
         :root { --primary: #1b5e20; --accent: #e65100; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding: 10px; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; }
         .hidden { display: none; }
-        
-        /* Auth Card */
-        .auth-card { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        input[type="tel"], input[type="text"] { width: 90%; padding: 12px; margin: 10px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 16px; }
-        
-        /* Tabs */
-        .tabs { display: flex; background: white; border-radius: 12px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; cursor: pointer; color: #666; }
-        .tab-btn.active { background: var(--primary); color: white; }
-
-        /* Order Cards */
-        .order-card { background: white; margin-bottom: 20px; padding: 15px; border-radius: 15px; border-top: 6px solid var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
-        .rate-input { width: 80px; padding: 8px; border: 2px solid var(--primary); border-radius: 6px; font-weight: bold; text-align: center; }
-        
-        .btn { border: none; padding: 14px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; font-size: 16px; }
-        .btn-main { background: var(--primary); color: white; margin-top: 10px; }
-        .btn-share { background: #25D366; color: white; margin-top: 15px; }
-        
-        .total-label { font-size: 20px; color: #d32f2f; font-weight: bold; text-align: right; display: block; padding: 10px 0; }
-        .story-item { background: #e8f5e9; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #c8e6c9; }
+        .card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn { border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; color: white; margin-top: 10px; }
+        .rate-input { width: 80px; border: 2px solid var(--primary); padding: 5px; border-radius: 5px; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 8px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
     </style>
 </head>
 <body>
 
-<div id="auth-section">
-    <div class="auth-card">
-        <h2 id="auth-title">Dukandar Login</h2>
-        <p style="color:#666; font-size:14px;">Apna WhatsApp number likhen jahan orders aayenge.</p>
-        <input type="tel" id="admin-phone" placeholder="91XXXXXXXXXX">
-        <input type="text" id="shop-name" placeholder="Dukaner Naam (Register jonno)">
-        <button class="btn btn-main" id="auth-btn" onclick="handleAuth()">Login & Check Orders</button>
-        <p style="margin-top:15px; font-size:14px;"><a href="#" onclick="toggleAuth()">Naya Account Register Karen</a></p>
-    </div>
+<div id="auth-section" class="card" style="text-align:center;">
+    <h2>Admin Login</h2>
+    <input type="tel" id="my-phone" placeholder="91XXXXXXXXXX" style="width:80%; padding:12px; margin-bottom:15px; border-radius:8px; border:1px solid #ccc;">
+    <button class="btn" style="background:var(--primary);" onclick="login()">Orders Check Krun</button>
 </div>
 
 <div id="dashboard" class="hidden">
-    <div class="tabs">
-        <button class="tab-btn active" id="tab-live" onclick="showTab('live')">Naye Orders</button>
-        <button class="tab-btn" id="tab-story" onclick="showTab('story')">Order Story</button>
-    </div>
-
-    <div id="live-section">
-        <div id="pending-list"></div>
-    </div>
-
-    <div id="story-section" class="hidden">
-        <div id="history-list"></div>
-    </div>
+    <div id="orders-list"></div>
 </div>
 
 <script>
     const firebaseConfig = {
         apiKey: "AIzaSyDpiRG3ZwxY9trXn4l4RPSdNDalaRzPmaU",
-        authDomain: "syed-kirana-shop.firebaseapp.com",
         databaseURL: "https://syed-kirana-shop-default-rtdb.firebaseio.com",
-        projectId: "syed-kirana-shop",
-        storageBucket: "syed-kirana-shop.firebasestorage.app",
-        messagingSenderId: "152414262069",
-        appId: "1:152414262069:web:a27ddda6004db29fdbf27c"
+        projectId: "syed-kirana-shop"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    let adminNum = "";
 
-    let myPhone = "";
-    let isRegister = false;
-
-    function toggleAuth() {
-        isRegister = !isRegister;
-        document.getElementById('auth-title').innerText = isRegister ? "Dukandar Register" : "Dukandar Login";
-        document.getElementById('shop-name').style.display = isRegister ? "block" : "none";
-        document.getElementById('auth-btn').innerText = isRegister ? "Register & Start" : "Login & Check Orders";
-    }
-
-    function handleAuth() {
-        const phone = document.getElementById('admin-phone').value.trim();
-        if(!phone) return alert("Daya kore number din!");
-        myPhone = phone;
-
-        if(isRegister) {
-            const sName = document.getElementById('shop-name').value;
-            db.ref('admins/' + phone).set({ shopName: sName, registeredOn: new Date().toLocaleDateString() });
-        }
-
+    function login() {
+        adminNum = document.getElementById('my-phone').value;
+        if(!adminNum) return alert("Number din!");
         document.getElementById('auth-section').classList.add('hidden');
         document.getElementById('dashboard').classList.remove('hidden');
-        startSync();
+        loadOrders();
     }
 
-    function showTab(type) {
-        document.getElementById('live-section').classList.toggle('hidden', type !== 'live');
-        document.getElementById('story-section').classList.toggle('hidden', type !== 'story');
-        document.getElementById('tab-live').classList.toggle('active', type === 'live');
-        document.getElementById('tab-story').classList.toggle('active', type === 'story');
-    }
-
-    function startSync() {
-        // Sirf wahi orders dikhayega jo login wale number par aaye hain
-        db.ref('all_orders/' + myPhone).on('value', (snap) => {
-            const pendingDiv = document.getElementById('pending-list');
-            const historyDiv = document.getElementById('history-list');
-            pendingDiv.innerHTML = ""; historyDiv.innerHTML = "";
-            
+    function loadOrders() {
+        db.ref('all_orders/' + adminNum).on('value', (snap) => {
+            const list = document.getElementById('orders-list');
+            list.innerHTML = "";
             const orders = snap.val();
-            if(!orders) {
-                pendingDiv.innerHTML = "<p style='text-align:center; padding:20px;'>Abhi koi order nahi hai.</p>";
-                return;
-            }
-
+            if(!orders) return list.innerHTML = "<p style='text-align:center;'>Order nei.</p>";
             for(let id in orders) {
-                if(orders[id].status === "Pending") {
-                    renderOrderCard(id, orders[id], pendingDiv);
-                } else {
-                    renderStoryCard(id, orders[id], historyDiv);
-                }
+                if(orders[id].status === "Pending") renderOrder(id, orders[id], list);
             }
         });
     }
 
-    function renderOrderCard(id, data, container) {
+    function renderOrder(id, data, container) {
         let rows = "";
-        data.items.forEach((itm) => {
-            rows += `<tr>
-                <td>${itm.name}</td>
-                <td style="color:blue; font-weight:bold;">${itm.qty} ${itm.unit}</td>
-                <td><input type="number" class="rate-${id}" data-q="${itm.qty}" data-u="${itm.unit}" data-n="${itm.name}" placeholder="Rate" oninput="calculateTotal('${id}')"></td>
-            </tr>`;
+        data.items.forEach(itm => {
+            rows += `<tr><td>${itm.name}</td><td>${itm.qty}${itm.unit}</td><td><input type="number" class="r-${id}" data-q="${itm.qty}" data-u="${itm.unit}" data-n="${itm.name}" oninput="calc('${id}')" placeholder="Rate"></td></tr>`;
         });
-
-        const card = document.createElement('div');
-        card.className = 'order-card';
-        card.innerHTML = `
-            <strong>Order ID: ${id}</strong> | <small>${data.time}</small>
-            <table><tr><th>Saaman</th><th>Qty</th><th>Rate/Unit</th></tr>${rows}</table>
-            <div class="total-label">Final Bill: ₹ <span id="val-${id}">0.00</span></div>
-            <button class="btn btn-share" onclick="generateInvoice('${id}')">Share Invoice (WhatsApp)</button>
-        `;
-        container.prepend(card);
+        const div = document.createElement('div');
+        div.className = "card";
+        div.innerHTML = `<b>ID: ${id}</b><br><small>Date: ${data.time}</small><table><tr><th>Item</th><th>Qty</th><th>Rate</th></tr>${rows}</table><div style="text-align:right; font-weight:bold; color:red; margin-top:10px;">Total: ₹<span id="tot-${id}">0.00</span></div><button class="btn" style="background:#25D366;" onclick="sendBill('${id}', '${data.customerContact}')">Share Invoice (WhatsApp)</button>`;
+        container.prepend(div);
     }
 
-    function calculateTotal(id) {
-        let total = 0;
-        document.querySelectorAll('.rate-' + id).forEach(i => {
-            const r = parseFloat(i.value) || 0; // Dukandar ka Rate
-            const q = parseFloat(i.dataset.q) || 0; // Customer ki Qty
-            const u = i.dataset.u; // Unit (Kg/Gm/Pcs)
-            total += (u === "Gm") ? (r / 1000) * q : r * q;
+    function calc(id) {
+        let t = 0;
+        document.querySelectorAll('.r-' + id).forEach(i => {
+            let r = parseFloat(i.value) || 0;
+            let q = parseFloat(i.dataset.q);
+            t += (i.dataset.u === "Gm") ? (r/1000)*q : r*q;
         });
-        document.getElementById('val-' + id).innerText = total.toFixed(2);
+        document.getElementById('tot-' + id).innerText = t.toFixed(2);
     }
 
-    function generateInvoice(orderId) {
-        const totalVal = document.getElementById('val-' + orderId).innerText;
-        if(totalVal == "0.00") return alert("Pahle rate bhariye!");
-
-        let invoice = `*📄 SYED STORES - DIGITAL INVOICE*\nID: ${orderId}\nDate: ${new Date().toLocaleDateString()}\n--------------------------\n`;
-        document.querySelectorAll('.rate-' + orderId).forEach(i => {
+    function sendBill(id, customerNum) {
+        const total = document.getElementById('tot-' + id).innerText;
+        if(total == "0.00") return alert("Rate boshun!");
+        let msg = `*📄 SYED STORE INVOICE*\nID: ${id}\n----------\n`;
+        document.querySelectorAll('.r-' + id).forEach(i => {
             let sub = (i.dataset.u === "Gm" ? i.value/1000 : i.value) * i.dataset.q;
-            invoice += `✅ ${i.dataset.n}: ${i.dataset.q}${i.dataset.u} x ₹${i.value} = ₹${sub.toFixed(2)}\n`;
+            msg += `✅ ${i.dataset.n}: ${i.dataset.q}${i.dataset.u} x ${i.value} = ₹${sub.toFixed(2)}\n`;
         });
-        invoice += `--------------------------\n💰 *GRAND TOTAL: ₹${totalVal}*\n--------------------------\nDhanyabad!🙏`;
-
-        // Update Firebase Status to Completed
-        db.ref('all_orders/' + myPhone + '/' + orderId).update({ status: "Completed", finalBill: totalVal });
-
-        // Share/WhatsApp logic
-        if (navigator.share) {
-            navigator.share({ title: 'Invoice', text: invoice }).catch(() => {
-                window.open("https://wa.me/?text=" + encodeURIComponent(invoice));
-            });
-        } else {
-            window.open("https://wa.me/?text=" + encodeURIComponent(invoice));
-        }
-    }
-
-    function renderStoryCard(id, data, container) {
-        container.innerHTML += `<div class="story-item">
-            <strong>Order: ${id}</strong> | Total: ₹${data.finalBill}<br>
-            <small>Time: ${data.time}</small>
-        </div>`;
+        msg += `----------\n*TOTAL: ₹${total}*\nDhanyabad!`;
+        db.ref('all_orders/' + adminNum + '/' + id).update({ status: "Done", finalBill: total });
+        window.open(`https://wa.me/${customerNum}?text=${encodeURIComponent(msg)}`);
     }
 </script>
 </body>
