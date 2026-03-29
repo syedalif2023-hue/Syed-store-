@@ -1,56 +1,56 @@
-const CACHE_NAME = 'syed-poultry-v2'; // Har bade update par v1 ko v2 kar dein
+const CACHE_NAME = 'syed-poultry-v3'; // Is baar v3 kar diya hai taaki pichla cache clear ho jaye
 const urlsToCache = [
   './',
   'index.html',
   'manifest.json',
   'rates.json',
-  'https://i.postimg.cc/htB6KXHz/Screenshot-2026-0322-222857.png'
+  // Naya logo link yahan add kar diya hai
+  'https://i.postimg.cc/qvGvWHfH/file-000000002d5871fa94f7e776546c7e6f.jpg'
 ];
 
-// 1. Install Event: Files ko cache mein save karna
+// 1. Install Event: Nayi files (including naya logo) cache mein save karega
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Files Caching Ho Rahi Hai...');
+      console.log('Naya Logo aur Files Cache Ho Rahi Hai...');
       return cache.addAll(urlsToCache);
     })
   );
-  // Naya service worker turant active ho jaye
-  self.skipWaiting();
+  self.skipWaiting(); 
 });
 
-// 2. Activate Event: Purane cache ko delete karna
+// 2. Activate Event: Purane v1 ya v2 cache ko delete karega
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
           if (cache !== CACHE_NAME) {
-            console.log('Purana Cache Delete Ho Raha Hai...');
+            console.log('Purana Cache (v1/v2) Saaf Ho Raha Hai...');
             return caches.delete(cache);
           }
         })
       );
     })
   );
+  // Turant control lene ke liye
+  return self.clients.claim();
 });
 
-// 3. Fetch Event: Rates ke liye Network First strategy
+// 3. Fetch Event: Rates ke liye Network First, baaki ke liye Cache First
 self.addEventListener('fetch', (event) => {
-  // Agar rates.json mangi ja rahi hai toh pehle internet se lao
   if (event.request.url.includes('rates.json')) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
           return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, response.clone()); // Cache update karo
+            cache.put(event.request, response.clone());
             return response;
           });
         })
-        .catch(() => caches.match(event.request)) // Internet na ho toh purana dikhao
+        .catch(() => caches.match(event.request))
     );
   } else {
-    // Baaki files ke liye Cache first taaki app fast chale
     event.respondWith(
       caches.match(event.request).then((response) => {
         return response || fetch(event.request);
