@@ -1,0 +1,21 @@
+{
+  "name": "Syed Natural - Live Poultry",
+  "short_name": "Syed Poultry",
+  "description": "Order Live Chicken Online - Syed Natural",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#d32f2f",
+  "icons": [
+    {
+      "src": "https://i.postimg.cc/htB6KXHz/Screenshot-2026-0322-222857.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.postimg.cc/htB6KXHz/Screenshot-2026-0322-222857.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
