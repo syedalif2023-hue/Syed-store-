@@ -16,7 +16,6 @@
         .logo-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid white; background: white; object-fit: cover; }
         .live-timer { font-size: 0.7rem; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 20px; display: inline-block; margin-top: 5px; }
         
-        /* Install Banner Styling */
         #installBanner { display: none; background: #fff; padding: 15px; text-align: center; border-bottom: 2px solid #eee; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .inst-btn { background: #d32f2f; color: white; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; margin-top: 8px; font-size: 0.9rem; }
 
@@ -158,10 +157,11 @@
         document.getElementById('installBanner').style.display = 'none';
     });
 
-    // --- Core App Logic ---
+    // --- Core App Logic (With Cache Buster) ---
     async function loadRates() {
         try {
-            const response = await fetch('rates.json');
+            // ?v= + time isse hamesha fresh rates milenge
+            const response = await fetch('rates.json?v=' + new Date().getTime());
             AAJ_KA_RATE = await response.json();
             updateUI();
         } catch (error) {
