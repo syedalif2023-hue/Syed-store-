@@ -7,7 +7,7 @@
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#d32f2f">
-    <link rel="apple-touch-icon" href="https://i.postimg.cc/htB6KXHz/Screenshot-2026-0322-222857.png">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/qvGvWHfH/file-000000002d5871fa94f7e776546c7e6f.jpg">
 
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 0; box-sizing: border-box; overflow-x: hidden; }
@@ -16,8 +16,12 @@
         .logo-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid white; background: white; object-fit: cover; }
         .live-timer { font-size: 0.7rem; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 20px; display: inline-block; margin-top: 5px; }
         
-        #installBanner { display: none; background: #fff; padding: 15px; text-align: center; border-bottom: 2px solid #eee; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .inst-btn { background: #d32f2f; color: white; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; margin-top: 8px; font-size: 0.9rem; }
+        #local-ad-container { 
+            background: #fff9c4; padding: 10px; text-align: center; border-bottom: 1px solid #fbc02d;
+            font-size: 0.85rem; color: #333; display: none; min-height: 50px; transition: opacity 0.5s;
+        }
+        .ad-img { width: 100%; max-height: 180px; object-fit: cover; border-radius: 10px; margin-bottom: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .ad-link { color: #d32f2f; font-weight: bold; text-decoration: none; margin-left: 5px; border-bottom: 1px solid #d32f2f; }
 
         .progress-container { display: flex; justify-content: center; gap: 10px; padding: 10px; background: #fff; border-bottom: 1px solid #eee; }
         .step-dot { width: 8px; height: 8px; background: #ddd; border-radius: 50%; transition: 0.3s; }
@@ -25,13 +29,12 @@
         .order-section { padding: 15px; flex-grow: 1; }
         .step-page { display: none; }
         .step-page.active { display: block; animation: slideIn 0.3s ease-out; }
-        .menu-card { background: #fff; border: 2px solid #eee; border-radius: 12px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
+        .menu-card { background: #fff; border: 2px solid #eee; border-radius: 12px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
         .menu-card.selected { border-color: #d32f2f; background: #fff9f9; transform: scale(0.98); }
         .menu-img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; }
         .menu-info h3 { margin: 0; font-size: 0.95rem; color: #333; }
         .menu-rate { color: #d32f2f; font-weight: bold; font-size: 1rem; }
         
-        /* New GPS Button Style */
         .gps-btn { background: #007bff; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
         #distStatus { font-size: 0.8rem; color: #d32f2f; font-weight: bold; text-align: center; margin-bottom: 10px; }
 
@@ -40,20 +43,21 @@
         .result-box { background: #fff1f1; padding: 12px; border-radius: 12px; border: 2px dashed #d32f2f; margin-top: 15px; text-align: center; }
         .final-val { font-size: 1.6rem; color: #d32f2f; font-weight: 900; }
         #sub-text { font-size: 0.85rem; color: #666; font-weight: bold; }
+        
         .btn-row { display: flex; gap: 10px; margin-top: 20px; }
         .btn-next { background: #d32f2f; color: white; border: none; flex: 1; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-back { background: #f0f0f0; color: #666; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        
+        .app-footer { padding: 20px 10px; text-align: center; border-top: 1px solid #eee; margin-top: 20px; background: #fff; }
+        .footer-links { display: flex; justify-content: center; gap: 15px; font-size: 0.85rem; }
+        .footer-links a { color: #d32f2f; text-decoration: none; font-weight: 600; }
+
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 20px; border-radius: 20px; width: 85%; max-width: 350px; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-
-<div id="installBanner">
-    <div style="font-size: 0.85rem; color: #444;">Fast ordering ke liye app install karein!</div>
-    <button class="inst-btn" id="installBtn">INSTALL APP</button>
-</div>
 
 <div class="modal" id="summaryModal">
     <div class="modal-content">
@@ -70,6 +74,8 @@
         <h2 style="margin:5px 0 0; font-size: 1.2rem;">SYED POULTRY SHOP</h2>
         <div class="live-timer" id="liveClock">Loading...</div>
     </div>
+
+    <div id="local-ad-container"></div>
 
     <div id="main-app">
         <div class="progress-container">
@@ -112,7 +118,7 @@
                 <select id="method" onchange="calc()"><option value="weight">Wazan (KG/GM)</option><option value="money">Paisa (Rs)</option></select>
                 <div style="display:flex; gap:10px; margin-top:10px;">
                     <input type="number" id="qty" oninput="calc()" placeholder="0">
-                    <select id="unit" onchange="calc()" style="width:100px;"><option value="kg">KG</option><option value="gm">GM</option><option value="rs" id="optRs" style="display:none;">Rs</option></select>
+                    <select id="unit" onchange="calc()" style="width:100px;"><option value="kg">KG</option><option value="gm">GM</option></select>
                 </div>
                 <div class="result-box"><div class="final-val" id="total">₹0</div><div id="sub-text">Calculation Details</div></div>
                 <div class="btn-row"><button class="btn-back" onclick="goToStep(2)">Back</button><button class="btn-next" onclick="go(4)">Next</button></div>
@@ -121,7 +127,6 @@
             <div class="step-page" id="step4">
                 <button type="button" class="gps-btn" onclick="getGPS()">📍 Detect My Location (Auto Rate)</button>
                 <div id="distStatus"></div>
-
                 <label>Manual Area Selection:</label>
                 <select id="area" onchange="updateV(); calc();"><option value="">-- Area --</option><option value="Dubrajpur">Dubrajpur</option><option value="Ilambazar">Ilambazar</option></select>
                 <label>Village:</label>
@@ -131,41 +136,59 @@
             </div>
         </div>
     </div>
+
+    <footer class="app-footer">
+        <div class="footer-links">
+            <a href="mailto:syedalif2017@gmail.com">Contact Us</a>
+            <span>|</span>
+            <a href="policy.html">Privacy Policy</a>
+        </div>
+    </footer>
 </div>
 
 <script>
-    let AAJ_KA_RATE = { whole: 0, curry: 0, bone: 0 };
-    let selItem = ""; let currentRate = 0;
-    let deferredPrompt;
-    let deliveryCharge = 0;
+    let AAJ_KA_RATE = { whole: 180, curry: 220, bone: 350 };
+    let allAds = []; let currentAdIndex = 0;
+    let selItem = ""; let currentRate = 0; let deliveryCharge = 0;
 
-    // --- SHOP LOCATION (Tarulia Bus Stand Set Kiya Gaya Hai) ---
-    const SHOP_LAT = 23.7155; 
-    const SHOP_LON = 87.4580;
+    const SHOP_LAT = 23.7155; const SHOP_LON = 87.4580;
 
     const villages = {
         "Dubrajpur": ["তরুলিয়া", "মেটাগ্রাম", "শিমুলডিহি", "ঝিরুল", "আমুড়ি", "আউলিয়া", "গোপালপুর", "রেংনা", "ভাটগ্রাম", "মাহমুদপুর", "পুলসra", "কামালপুর", "ফকিরবেড়া"],
         "Ilambazar": ["Achhaipara", "Akamba", "Amladihi", "Anaipur", "Baharampur", "Balarpur", "Balta", "Baranabagram", "Baruipur", "Batikor", "Beloa", "Bhabanipur", "Bharatpur", "Brahmandihi", "Chak Paran", "Chaupahari", "Chella", "Dhalla", "Dhulpur", "Dumrui", "Etapur"]
     };
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault(); deferredPrompt = e;
-        document.getElementById('installBanner').style.display = 'block';
-    });
+    async function loadLocalAds() {
+        try {
+            const res = await fetch('ads.json?v=' + Date.now());
+            const data = await res.json();
+            allAds = Array.isArray(data) ? data : [data];
+            if(allAds.length > 0 && allAds[0].active) {
+                renderAd(0);
+                if(allAds.length > 1) setInterval(() => { currentAdIndex = (currentAdIndex+1)%allAds.length; renderAd(currentAdIndex); }, 5000);
+            }
+        } catch(e) { console.log("Ads not loaded."); }
+    }
 
-    document.getElementById('installBtn').addEventListener('click', async () => {
-        if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
-    });
+    function renderAd(idx) {
+        const container = document.getElementById('local-ad-container');
+        const ad = allAds[idx];
+        if(!ad || !ad.active) return;
+        container.style.opacity = '0';
+        setTimeout(() => {
+            container.style.display = 'block';
+            let imgHTML = ad.image ? `<img src="${ad.image}" class="ad-img">` : '';
+            container.innerHTML = `${imgHTML}<div>${ad.message}</div><a href="${ad.url}" class="ad-link">${ad.linkText}</a>`;
+            container.style.opacity = '1';
+        }, 500);
+    }
 
     async function loadRates() {
         try {
-            const response = await fetch('rates.json?v=' + new Date().getTime());
-            AAJ_KA_RATE = await response.json();
-            updateUI();
-        } catch (error) {
-            AAJ_KA_RATE = { whole: 180, curry: 220, bone: 350 };
-            updateUI();
-        }
+            const res = await fetch('rates.json?v=' + Date.now());
+            AAJ_KA_RATE = await res.json();
+        } catch (e) { console.log("Using default rates."); }
+        updateUI();
     }
 
     function updateUI(){
@@ -182,6 +205,20 @@
         calc();
     }
 
+    function calc(){
+        let m = document.getElementById('method').value; 
+        let q = parseFloat(document.getElementById('qty').value) || 0; 
+        let u = document.getElementById('unit').value;
+        let area = document.getElementById('area').value;
+        if(deliveryCharge === 0) {
+            if(area === "Dubrajpur") deliveryCharge = 20;
+            else if(area === "Ilambazar") deliveryCharge = 40;
+        }
+        let itemPrice = (m === "weight") ? Math.round((u==="kg"?currentRate:currentRate/1000)*q) : q;
+        document.getElementById('total').innerText = "₹" + (itemPrice + deliveryCharge);
+        document.getElementById('sub-text').innerText = `Item: ₹${itemPrice} + Delivery: ₹${deliveryCharge}`;
+    }
+
     function getGPS() {
         const status = document.getElementById('distStatus');
         status.innerText = "Finding location...";
@@ -191,7 +228,7 @@
                 deliveryCharge = Math.max(20, Math.round(dist * 8));
                 status.innerText = `Distance: ${dist.toFixed(1)} KM | Delivery: ₹${deliveryCharge}`;
                 calc();
-            }, () => { status.innerText = "GPS Error! Please select manually."; });
+            }, () => { status.innerText = "GPS Error!"; });
         }
     }
 
@@ -201,33 +238,17 @@
         return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
     }
 
-    function calc(){
-        let m = document.getElementById('method').value; 
-        let q = parseFloat(document.getElementById('qty').value) || 0; 
-        let u = document.getElementById('unit').value;
-        let area = document.getElementById('area').value;
-        
-        if(deliveryCharge === 0) {
-            if(area === "Dubrajpur") deliveryCharge = 20;
-            else if(area === "Ilambazar") deliveryCharge = 40;
-        }
-
-        let itemPrice = (m === "weight") ? Math.round((u==="kg"?currentRate:currentRate/1000)*q) : q;
-        document.getElementById('total').innerText = "₹" + (itemPrice + deliveryCharge);
-        document.getElementById('sub-text').innerText = `Item: ₹${itemPrice} + Delivery: ₹${deliveryCharge}`;
-    }
-
-    function go(s){ 
-        if(s==2 && !selItem) { alert("Chicken type select karein!"); return; }
-        if(s==3 && (!document.getElementById('custName').value || !document.getElementById('custPhone').value)) { alert("Details bhariye!"); return; }
-        goToStep(s); 
-    }
-
     function goToStep(s){
         document.querySelectorAll('.step-page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.step-dot').forEach(d => d.classList.remove('active'));
         document.getElementById('step' + s).classList.add('active');
         for(let i=1; i<=s; i++) document.getElementById('dot' + i).classList.add('active');
+    }
+
+    function go(s){ 
+        if(s==2 && !selItem) return alert("Chicken select karein!");
+        if(s==3 && (!document.getElementById('custName').value || !document.getElementById('custPhone').value)) return alert("Details bhariye!");
+        goToStep(s); 
     }
 
     function updateV(){
@@ -237,51 +258,50 @@
     }
 
     function showSum(){
-        if(!document.getElementById('vill').value && deliveryCharge === 0) { alert("Location set karein!"); return; }
-        document.getElementById('summaryData').innerHTML = `
-            👤 Name: ${document.getElementById('custName').value}<br>
-            📞 Phone: ${document.getElementById('custPhone').value}<br>
-            🍗 Item: ${selItem}<br>
-            🚚 Delivery: ₹${deliveryCharge}<br>
-            💰 Total: ${document.getElementById('total').innerText}<br>
-            🏠 Gaon: ${document.getElementById('vill').value || 'GPS Detected'}
-        `;
+        if(!document.getElementById('vill').value && deliveryCharge === 0) return alert("Location set karein!");
+        document.getElementById('summaryData').innerHTML = `👤 Name: ${document.getElementById('custName').value}<br>📞 Phone: ${document.getElementById('custPhone').value}<br>🍗 Item: ${selItem}<br>🚚 Delivery: ₹${deliveryCharge}<br>💰 Total: ${document.getElementById('total').innerText}`;
         document.getElementById('summaryModal').style.display = 'flex';
     }
 
     function closeModal(){ document.getElementById('summaryModal').style.display = 'none'; }
 
+    // --- WHATSAPP MESSAGE FIX (WITH DATE & DELIVERY CHARGE) ---
     function confirmAndSend(){
         const name = document.getElementById('custName').value.trim();
         const phone = document.getElementById('custPhone').value;
-        const total = document.getElementById('total').innerText;
+        const totalStr = document.getElementById('total').innerText;
         const village = document.getElementById('vill').value || "GPS Location";
-        const land = document.getElementById('land').value || "N/A";
+        const landmark = document.getElementById('land').value || "None";
+        const quantity = document.getElementById('qty').value;
+        const unit = document.getElementById('unit').value;
         
-        const samay = new Date().toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
+        // Real-time Date and Time
+        const samay = new Date().toLocaleString('en-IN', { 
+            day:'2-digit', month:'short', year:'numeric', 
+            hour:'2-digit', minute:'2-digit', hour12:true 
+        });
 
         let msg = `*🐔 SYED POULTRY SHOP - ORDER*%0A` +
                   `🗓️ *Time:* ${samay}%0A` +
                   `----------------------------%0A` +
-                  `👤 *Customer:* ${name}%0A` +
+                  `👤 *Name:* ${name}%0A` +
                   `📞 *Phone:* ${phone}%0A` +
                   `🍗 *Item:* ${selItem}%0A` +
+                  `⚖️ *Qty:* ${quantity} ${unit}%0A` +
                   `🚚 *Delivery:* ₹${deliveryCharge}%0A` +
-                  `💰 *Total Bill: ${total}*%0A` +
+                  `💰 *Total Bill: ${totalStr}*%0A` +
                   `🏠 *Loc:* ${village}%0A` +
-                  `📍 *Land:* ${land}%0A` +
+                  `📍 *Landmark:* ${landmark}%0A` +
                   `----------------------------%0A` +
-                  `_Order from App_`;
+                  `_Order from Syed Natural App_`;
         
         window.open(`https://wa.me/918637831146?text=${msg}`);
     }
 
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
-    }
-
-    loadRates();
-    setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleString(); }, 1000);
+    window.onload = () => {
+        loadRates(); loadLocalAds();
+        setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleString(); }, 1000);
+    };
 </script>
 </body>
 </html>
