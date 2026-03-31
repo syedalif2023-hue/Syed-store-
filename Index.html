@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Grocery App</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FFD700">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9416108474178872"
+     crossorigin="anonymous"></script>
+
+    <style>
+        :root { --primary: #1b5e20; --bg: #FFD700; --secondary: #e65100; }
+        * { box-sizing: border-box; }
+        
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--bg); padding: 10px; margin: 0; }
+
+        .container { max-width: 500px; margin: auto; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); min-height: 96vh; display: flex; flex-direction: column; }
+
+        .ad-container { 
+            margin: 15px 0; 
+            text-align: center; 
+            background: #f1f1f1; 
+            border-radius: 8px; 
+            min-height: 100px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden; 
+            position: relative;
+        }
+        #ad-img { width: 100%; height: auto; transition: opacity 0.5s ease-in-out; display: block; border-radius: 8px; }
+
+        #install-row { display: none; background: #fff3e0; padding: 10px; border-radius: 10px; border: 1px solid #ffe0b2; margin-bottom: 15px; text-align: center; }
+        .btn-install { background: #e65100; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        
+        .time-header { background: #fffde7; padding: 10px; border-radius: 10px; text-align: center; margin-bottom: 15px; border: 1px solid #fbc02d; }
+        #current-date { font-size: 14px; color: #555; display: block; font-weight: 500; }
+        #current-time { font-size: 20px; color: var(--primary); font-weight: bold; display: block; }
+
+        h1 { text-align: center; color: var(--primary); font-size: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; margin-bottom: 10px; }
+        .btn-summary { background: var(--secondary); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; margin-bottom: 15px; cursor: pointer; }
+        
+        .summary-card { background: #fff9c4; border: 2px dashed #fbc02d; padding: 12px; border-radius: 10px; margin-bottom: 15px; font-size: 14px; }
+        .category-item { background: #f9fbe7; margin: 10px 0; padding: 18px; border-radius: 12px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; border: 1px solid #dcedc8; }
+        
+        .hidden { display: none; }
+        .item-row { padding: 15px 0; border-bottom: 1px solid #eee; }
+        .item-name { font-weight: bold; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; color: #333; }
+        .controls-grid { display: grid; grid-template-columns: 0.8fr 1.5fr 0.8fr; gap: 8px; margin-bottom: 8px; }
+        
+        input, select { padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; width: 100%; }
+        .total-box { background: #fffde7; padding: 8px; border-radius: 6px; text-align: right; font-weight: bold; color: #d32f2f; font-size: 14px; }
+        
+        .footer-btns { position: sticky; bottom: 0; background: white; padding: 15px 0; display: flex; gap: 10px; z-index: 10; }
+        button { flex: 1; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-back { background: #eceff1; color: #455a64; }
+        .btn-save { background: var(--primary); color: white; }
+
+        .whatsapp-section { margin-top: auto; padding-top: 20px; border-top: 2px solid #eee; }
+        .wa-input-group { display: flex; gap: 8px; margin-bottom: 10px; }
+        .num-input { flex: 1; border: 2px solid #81c784; font-size: 16px; font-weight: bold; padding: 10px; border-radius: 8px; }
+        .btn-contact { background: #007bff; color: white; padding: 0 15px; font-size: 18px; border-radius: 8px; border: none; }
+        
+        /* Naya Button Style */
+        .btn-save-notes { background: #ffc107; color: #000; width: 100%; font-size: 18px; height: 50px; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 10px; border: none; margin-bottom: 10px; }
+        .btn-wa { background: #25D366; color: white; width: 100%; font-size: 18px; height: 55px; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 10px; border: none; }
+        
+        .policy-footer { text-align: center; padding: 20px 0; margin-top: 10px; font-size: 13px; border-top: 1px solid #eee; }
+        .policy-footer a { color: #666; text-decoration: none; margin: 0 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="install-row">
+        <span style="font-size: 13px; margin-bottom: 5px; display: block;">অ্যাপটি ফোনে ইন্সটল করতে চান?</span>
+        <button class="btn-install" id="btn-install-app">ইন্সটল করুন</button>
+    </div>
+
+    <div class="time-header">
+        <span id="current-date">লোড হচ্ছে...</span>
+        <span id="current-time">00:00:00 AM</span>
+    </div>
+
+    <div id="home-page">
+        <h1>সব ধরনের সামগ্রী লিস্ট</h1>
+
+        <div class="ad-container" id="ad-wrapper">
+            <a id="ad-link" href="#" target="_blank">
+                <img id="ad-img" src="https://via.placeholder.com/400x100?text=Posters+Loading..." alt="Promotion">
+            </a>
+            
+            <ins class="adsbygoogle"
+                 style="display:none" 
+                 data-ad-client="ca-pub-9416108474178872"
+                 data-ad-slot="auto"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <button class="btn-summary" onclick="toggleSummary()">অর্ডার সামারি দেখুন</button>
+        <div id="summary-view" class="summary-card hidden">
+            <div id="summary-content">কোনো আইটেম সিলেক্ট করা নেই।</div>
+            <div id="summary-total" style="text-align:right; font-weight:bold; color:#d32f2f; margin-top:10px; border-top:1px solid #ffd54f; padding-top:5px;"></div>
+        </div>
+        <div id="category-list"></div>
+    </div>
+
+    <div id="items-page" class="hidden">
+        <h1 id="cat-title">Items</h1>
+        <div id="items-container"></div>
+        <div class="footer-btns">
+            <button class="btn-back" onclick="goToHome()">Back</button>
+            <button class="btn-save" onclick="goToHome()">Save & Close</button>
+        </div>
+    </div>
+
+    <div class="whatsapp-section">
+        <label style="font-weight: bold; color: #555; font-size: 13px; margin-bottom: 5px; display: block;">নম্বর বেছে নিন বা লিখুন:</label>
+        <div class="wa-input-group">
+            <input type="tel" id="wa-num" class="num-input" placeholder="91XXXXXXXXXX">
+            <button id="btn-picker" class="btn-contact" onclick="selectFromContacts()" title="Contact থেকে বাছুন">👤</button>
+        </div>
+
+        <button class="btn-save-notes" onclick="saveToNotes()">
+            <span>📝 Save Order (Keep/Notes)</span>
+        </button>
+
+        <button class="btn-wa" onclick="sendWA()"><span>WhatsApp-এ অর্ডার দিন</span></button>
+    </div>
+
+    <div class="policy-footer">
+        <a href="policy.html">Privacy Policy</a> | 
+        <a href="mailto:syedalif2017@gmail.com">Contact Us</a>
+        <p style="color: #666; margin-top: 10px;">&copy; 2026 Smart Grocery App</p>
+    </div>
+</div>
+
+<script src="ads.js"></script>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerText = now.toLocaleDateString('bn-BD', options);
+        document.getElementById('current-time').innerText = now.toLocaleTimeString('bn-BD');
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    async function selectFromContacts() {
+        if (!('contacts' in navigator && 'select' in navigator.contacts)) {
+            return alert("আপনার ব্রাউজার কন্টাক্ট লিস্ট সাপোর্ট করে না। দয়া করে নম্বরটি লিখুন।");
+        }
+        try {
+            const props = ['tel'];
+            const opts = { multiple: false };
+            const contacts = await navigator.contacts.select(props, opts);
+            if (contacts.length && contacts[0].tel && contacts[0].tel.length > 0) {
+                let rawNum = contacts[0].tel[0].replace(/\s+/g, '').replace(/-/g, '');
+                if(rawNum.startsWith('+')) rawNum = rawNum.substring(1);
+                document.getElementById('wa-num').value = rawNum;
+            }
+        } catch (err) { console.log("Picker cancelled."); }
+    }
+
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault(); deferredPrompt = e;
+        document.getElementById('install-row').style.display = 'block';
+    });
+
+    document.getElementById('btn-install-app').addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') document.getElementById('install-row').style.display = 'none';
+            deferredPrompt = null;
+        }
+    });
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => { navigator.serviceWorker.register('service-worker.js'); });
+    }
+
+    const data = {
+        "A) নিত্যপ্রয়োজনীয় সবজি": ["আলু","পেঁয়াজ","আদা","রসুন","কাঁচা লঙ্কা"],
+        "B) ডাল ও শস্য": ["চাল","আটা","ময়দা","সর্ষের তেল","চিনি","চা পাতা","মুসুর ডাল","মুড়ি","গুড়","মটর","মুগ ডাল","ছোলা","অড়হর ডাল"],
+        "C) মশলার তালিকা": ["হলুদ ","কাশ্মীরি লঙ্কা গুঁড়ো","ধনে গুঁড়ো "," জিরে গুঁড়ো ","নুন / লবণ ","বিরিয়ানি মশলা","চিকেন মশলা","মিট মশলা / মাংসের মশলা","পোস্ত","সর্ষে","তেজপাতা","পাঁচ ফোড়ন","লবঙ্গ ","গরম মশলা ","শাহী গরম মশলা","মৌরি","গোলমরিচ","কালো জিরে ","হিং ","দারুচিনি","এলাচ","বড় এলাচ","কসুরি মেথি","জোয়ান","চাট মশলা","জায়ফল","জয়িত্রী"],
+        "D) তাজা সবজি": ["শসা","ধনে পাতা","লেবু","গাজর","বিট","শিম","টমেটো","পালং শাক","পুঁই শাক","লাল শাক","বেগুন","পটল","কাঁচকলা","করলা","কুমড়ো","ঢ্যাঁড়স","ফুলকপি","বাঁধাকপি","মুলো","মুলো শাক ","কলমি শাক ","সুশনি শাক","ওল","লাউ","ঝিঙে","পেপে","চিচিঙ্গা"],
+        "E) তাজা ফল": ["কলা","আপেল","পেয়ারা","পেপে","আঙুর","বেদানা","কমলালেবু","পাতিলেবু","আম","কাঁঠাল","লিচু","তরমুজ","খরমুজ","কালোজাম","আতা","নারকেল","ডাব","新技术লকী","সবেদা","বেল","কুল","আনারস"],
+        "F) শুকনো ফলের তালিকা": ["কাজু বাদাম","আখরোট","খেজুর","কাঠবাদাম","কিসমিস","চীনাবাদাম","ডুমুর (শুকনো)","পেস্তা","মাখানা","খুবানি","জাফরান / কেশর"],
+        "G) syed": ["1","2"]
+    };
+
+    let selectedItems = {};
+
+    function init() {
+        const list = document.getElementById('category-list');
+        for (let cat in data) {
+            let d = document.createElement('div');
+            d.className = 'category-item';
+            d.innerHTML = `<span>${cat}</span> <span>➔</span>`;
+            d.onclick = () => showCat(cat);
+            list.appendChild(d);
+        }
+    }
+
+    function showCat(cat) {
+        document.getElementById('home-page').classList.add('hidden');
+        document.getElementById('items-page').classList.remove('hidden');
+        document.getElementById('cat-title').innerText = cat;
+        const container = document.getElementById('items-container');
+        container.innerHTML = '';
+        data[cat].forEach(item => {
+            const saved = selectedItems[item] || { qty: '', unit: 'Kg', rate: '' };
+            let div = document.createElement('div');
+            div.className = 'item-row';
+            div.innerHTML = `<div class="item-name"><input type="checkbox" id="chk-${item}" ${selectedItems[item]?'checked':''} onchange="handleInstantSelect('${item}')"> <label>${item}</label></div><div class="controls-grid"><input type="number" id="q-${item}" placeholder="Qty" value="${saved.qty}" oninput="updatePrice('${item}')"><select id="u-${item}" onchange="updatePrice('${item}')"><option value="Kg" ${saved.unit==='Kg'?'selected':''}>Kg</option><option value="Gm" ${saved.unit==='Gm'?'selected':''}>Gm</option><option value="Pcs" ${saved.unit==='Pcs'?'selected':''}>Pcs</option></select><input type="number" id="r-${item}" placeholder="Rate" value="${saved.rate}" oninput="updatePrice('${item}')"></div><div class="total-box">মোট দাম: ₹ <span id="t-${item}">0.00</span></div>`;
+            container.appendChild(div);
+            updatePrice(item);
+        });
+    }
+
+    function handleInstantSelect(item) {
+        const isChecked = document.getElementById(`chk-${item}`).checked;
+        if (isChecked) {
+            selectedItems[item] = { qty: document.getElementById(`q-${item}`).value, unit: document.getElementById(`u-${item}`).value, rate: document.getElementById(`r-${item}`).value };
+        } else { delete selectedItems[item]; }
+    }
+
+    function updatePrice(item) {
+        const q = parseFloat(document.getElementById(`q-${item}`).value) || 0;
+        const u = document.getElementById(`u-${item}`).value;
+        const r = parseFloat(document.getElementById(`r-${item}`).value) || 0;
+        let total = (u === "Gm") ? (r / 1000) * q : q * r;
+        if(document.getElementById(`t-${item}`)) document.getElementById(`t-${item}`).innerText = total.toFixed(2);
+        if (selectedItems[item]) { selectedItems[item].qty = q; selectedItems[item].unit = u; selectedItems[item].rate = r; }
+    }
+
+    function goToHome() { document.getElementById('home-page').classList.remove('hidden'); document.getElementById('items-page').classList.add('hidden'); updateSummaryView(); }
+    function toggleSummary() { const view = document.getElementById('summary-view'); view.classList.toggle('hidden'); updateSummaryView(); }
+
+    function updateSummaryView() {
+        const content = document.getElementById('summary-content');
+        const totalDiv = document.getElementById('summary-total');
+        let html = ""; let grandTotal = 0; let hasItems = false;
+        for (let key in selectedItems) {
+            let itm = selectedItems[key];
+            if(itm.qty > 0) {
+                let itemTotal = itm.unit === "Gm" ? (itm.rate/1000)*itm.qty : itm.qty*itm.rate;
+                html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>✅ ${key} (${itm.qty} ${itm.unit})</span><span>₹${itemTotal.toFixed(2)}</span></div>`;
+                grandTotal += itemTotal; hasItems = true;
+            }
+        }
+        if(!hasItems) { content.innerHTML = "কোনো আইটেম সিলেক্ট করা নেই।"; totalDiv.innerText = ""; }
+        else { content.innerHTML = html; totalDiv.innerText = "মোট বিল: ₹" + grandTotal.toFixed(2); }
+    }
+
+    // --- FUNCTION TO SAVE ORDER (KEEP NOTES / CHOOSER) ---
+    function saveToNotes() {
+        let msg = "*🛒 বাজার লিস্ট ও বিল:*\n" + document.getElementById('current-date').innerText + "\n--------------------------\n";
+        let grandTotal = 0; let hasItems = false;
+        for (let key in selectedItems) {
+            let itm = selectedItems[key];
+            if(itm.qty > 0) {
+                let itemTotal = itm.unit === "Gm" ? (itm.rate/1000)*itm.qty : itm.qty*itm.rate;
+                msg += `\n✅ ${key}: ${itm.qty} ${itm.unit} x ${itm.rate} = ₹${itemTotal.toFixed(2)}`;
+                grandTotal += itemTotal; hasItems = true;
+            }
+        }
+        if(!hasItems) return alert("আইটেম সিলেক্ট করুন!");
+        msg += `\n\n--------------------------\n💰 সর্বমোট বিল: ₹${grandTotal.toFixed(2)}`;
+
+        // Web Share API: Android Chooser ki tarah kaam karta hai
+        if (navigator.share) {
+            navigator.share({
+                title: 'Grocery Order List',
+                text: msg
+            }).catch(console.error);
+        } else {
+            // Fallback: Agar browser support nahi karta toh text copy kar dega
+            navigator.clipboard.writeText(msg);
+            alert("আপনার ব্রাউজার সাপোর্ট করে না। লিস্ট কপি করা হয়েছে, আপনি Keep Notes-এ পেস্ট করতে পারেন।");
+        }
+    }
+
+    function sendWA() {
+        const num = document.getElementById('wa-num').value;
+        if(!num) return alert("নম্বর দিন!");
+        let msg = "*🛒 বাজার লিস্ট ও বিল:*\n" + document.getElementById('current-date').innerText + "\n--------------------------\n";
+        let grandTotal = 0; let hasItems = false;
+        for (let key in selectedItems) {
+            let itm = selectedItems[key];
+            if(itm.qty > 0) {
+                let itemTotal = itm.unit === "Gm" ? (itm.rate/1000)*itm.qty : itm.qty*itm.rate;
+                msg += `\n✅ *${key}*\n${itm.qty} ${itm.unit} x ${itm.rate} = *₹${itemTotal.toFixed(2)}*`;
+                grandTotal += itemTotal; hasItems = true;
+            }
+        }
+        if(!hasItems) return alert("আইটেম সিলেক্ট করুন!");
+        msg += `\n\n*--------------------------*\n💰 *সর্বমোট বিল: ₹${grandTotal.toFixed(2)}*`;
+        window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`);
+    }
+    init();
+</script>
+</body>
+</html>
