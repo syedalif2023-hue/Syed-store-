@@ -7,7 +7,7 @@
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#d32f2f">
-    <link rel="apple-touch-icon" href="https://i.postimg.cc/qvGvWHfH/file-000000002d5871fa94f7e776546c7e6f.jpg">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/htB6KXHz/Screenshot-2026-0322-222857.png">
 
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 0; box-sizing: border-box; overflow-x: hidden; }
@@ -16,12 +16,8 @@
         .logo-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid white; background: white; object-fit: cover; }
         .live-timer { font-size: 0.7rem; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 20px; display: inline-block; margin-top: 5px; }
         
-        #local-ad-container { 
-            background: #fff9c4; padding: 10px; text-align: center; border-bottom: 1px solid #fbc02d;
-            font-size: 0.85rem; color: #333; display: none; min-height: 50px; transition: opacity 0.5s;
-        }
-        .ad-img { width: 100%; max-height: 180px; object-fit: cover; border-radius: 10px; margin-bottom: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .ad-link { color: #d32f2f; font-weight: bold; text-decoration: none; margin-left: 5px; border-bottom: 1px solid #d32f2f; }
+        #installBanner { display: none; background: #fff; padding: 15px; text-align: center; border-bottom: 2px solid #eee; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .inst-btn { background: #d32f2f; color: white; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; margin-top: 8px; font-size: 0.9rem; }
 
         .progress-container { display: flex; justify-content: center; gap: 10px; padding: 10px; background: #fff; border-bottom: 1px solid #eee; }
         .step-dot { width: 8px; height: 8px; background: #ddd; border-radius: 50%; transition: 0.3s; }
@@ -29,28 +25,23 @@
         .order-section { padding: 15px; flex-grow: 1; }
         .step-page { display: none; }
         .step-page.active { display: block; animation: slideIn 0.3s ease-out; }
-        .menu-card { background: #fff; border: 2px solid #eee; border-radius: 12px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .menu-card { background: #fff; border: 2px solid #eee; border-radius: 12px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
         .menu-card.selected { border-color: #d32f2f; background: #fff9f9; transform: scale(0.98); }
         .menu-img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; }
         .menu-info h3 { margin: 0; font-size: 0.95rem; color: #333; }
         .menu-rate { color: #d32f2f; font-weight: bold; font-size: 1rem; }
-        
-        .gps-btn { background: #007bff; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
-        #distStatus { font-size: 0.8rem; color: #d32f2f; font-weight: bold; text-align: center; margin-bottom: 10px; }
-
         label { display: block; margin-top: 10px; font-weight: bold; color: #555; font-size: 0.85rem; }
         input, select { width: 100%; padding: 12px; margin-top: 5px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
         .result-box { background: #fff1f1; padding: 12px; border-radius: 12px; border: 2px dashed #d32f2f; margin-top: 15px; text-align: center; }
         .final-val { font-size: 1.6rem; color: #d32f2f; font-weight: 900; }
         #sub-text { font-size: 0.85rem; color: #666; font-weight: bold; }
-        
         .btn-row { display: flex; gap: 10px; margin-top: 20px; }
         .btn-next { background: #d32f2f; color: white; border: none; flex: 1; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-back { background: #f0f0f0; color: #666; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
         
-        .app-footer { padding: 20px 10px; text-align: center; border-top: 1px solid #eee; margin-top: 20px; background: #fff; }
-        .footer-links { display: flex; justify-content: center; gap: 15px; font-size: 0.85rem; }
-        .footer-links a { color: #d32f2f; text-decoration: none; font-weight: 600; }
+        /* Location Button Style */
+        .loc-btn { background: #f8f9fa; border: 2px solid #d32f2f; color: #d32f2f; padding: 10px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .loc-btn:active { background: #d32f2f; color: white; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 20px; border-radius: 20px; width: 85%; max-width: 350px; }
@@ -58,6 +49,11 @@
     </style>
 </head>
 <body>
+
+<div id="installBanner">
+    <div style="font-size: 0.85rem; color: #444;">Fast ordering ke liye app install karein!</div>
+    <button class="inst-btn" id="installBtn">INSTALL APP</button>
+</div>
 
 <div class="modal" id="summaryModal">
     <div class="modal-content">
@@ -74,8 +70,6 @@
         <h2 style="margin:5px 0 0; font-size: 1.2rem;">SYED POULTRY SHOP</h2>
         <div class="live-timer" id="liveClock">Loading...</div>
     </div>
-
-    <div id="local-ad-container"></div>
 
     <div id="main-app">
         <div class="progress-container">
@@ -118,17 +112,22 @@
                 <select id="method" onchange="calc()"><option value="weight">Wazan (KG/GM)</option><option value="money">Paisa (Rs)</option></select>
                 <div style="display:flex; gap:10px; margin-top:10px;">
                     <input type="number" id="qty" oninput="calc()" placeholder="0">
-                    <select id="unit" onchange="calc()" style="width:100px;"><option value="kg">KG</option><option value="gm">GM</option></select>
+                    <select id="unit" onchange="calc()" style="width:100px;"><option value="kg">KG</option><option value="gm">GM</option><option value="rs" id="optRs" style="display:none;">Rs</option></select>
                 </div>
-                <div class="result-box"><div class="final-val" id="total">₹0</div><div id="sub-text">Calculation Details</div></div>
+                <div class="result-box">
+                    <div class="final-val" id="total">₹0</div>
+                    <div id="sub-text">Calculation Details</div>
+                    <div style="color: #d32f2f; font-size: 0.7rem; margin-top: 5px;">(Includes ₹20 Fix Delivery Charge)</div>
+                </div>
                 <div class="btn-row"><button class="btn-back" onclick="goToStep(2)">Back</button><button class="btn-next" onclick="go(4)">Next</button></div>
             </div>
 
             <div class="step-page" id="step4">
-                <button type="button" class="gps-btn" onclick="getGPS()">📍 Detect My Location (Auto Rate)</button>
-                <div id="distStatus"></div>
-                <label>Manual Area Selection:</label>
-                <select id="area" onchange="updateV(); calc();"><option value="">-- Area --</option><option value="Dubrajpur">Dubrajpur</option><option value="Ilambazar">Ilambazar</option></select>
+                <button class="loc-btn" onclick="detectLoc()">📍 Detect My Location</button>
+                <div id="locStatus" style="font-size: 0.7rem; text-align: center; color: #25d366; margin-bottom: 10px;"></div>
+
+                <label>Delivery Area:</label>
+                <select id="area" onchange="updateV()"><option value="">-- Area --</option><option value="Dubrajpur">Dubrajpur</option><option value="Ilambazar">Ilambazar</option></select>
                 <label>Village:</label>
                 <select id="vill" style="margin-top:10px;"><option value="">-- Gaon --</option></select>
                 <input type="text" id="land" placeholder="Landmark" style="margin-top:10px;">
@@ -136,59 +135,48 @@
             </div>
         </div>
     </div>
-
-    <footer class="app-footer">
-        <div class="footer-links">
-            <a href="mailto:syedalif2017@gmail.com">Contact Us</a>
-            <span>|</span>
-            <a href="policy.html">Privacy Policy</a>
-        </div>
-    </footer>
 </div>
 
 <script>
-    let AAJ_KA_RATE = { whole: 180, curry: 220, bone: 350 };
-    let allAds = []; let currentAdIndex = 0;
-    let selItem = ""; let currentRate = 0; let deliveryCharge = 0;
-
-    const SHOP_LAT = 23.7155; const SHOP_LON = 87.4580;
+    let AAJ_KA_RATE = { whole: 0, curry: 0, bone: 0 };
+    let selItem = ""; let currentRate = 0;
+    let deferredPrompt;
+    let fixCharge = 20; // FIX RATE/CHARGE AS REQUESTED
+    let userMapLink = "";
 
     const villages = {
-        "Dubrajpur": ["তরুলিয়া", "মেটাগ্রাম", "শিমুলডিহি", "ঝিরুল", "আমুড়ি", "আউলিয়া", "গোপালপুর", "রেংনা", "ভাটগ্রাম", "মাহমুদপুর", "পুলসra", "কামালপুর", "ফকিরবেড়া"],
-        "Ilambazar": ["Achhaipara", "Akamba", "Amladihi", "Anaipur", "Baharampur", "Balarpur", "Balta", "Baranabagram", "Baruipur", "Batikor", "Beloa", "Bhabanipur", "Bharatpur", "Brahmandihi", "Chak Paran", "Chaupahari", "Chella", "Dhalla", "Dhulpur", "Dumrui", "Etapur"]
+        "Dubrajpur": ["তরুলিয়া", "মেটাগ্রাম", "শিমুলডিহি", "ঝিরুল", "আমুড়ি", "আউলিয়া", "গোপালপুর", "রেংনা", "ভাটগ্রাম", "মাহমুদপুর", "পুলসরা", "কামালপুর", "ফকিরবেড়া"],
+        "Ilambazar": ["Coming soon"],
     };
 
-    async function loadLocalAds() {
-        try {
-            const res = await fetch('ads.json?v=' + Date.now());
-            const data = await res.json();
-            allAds = Array.isArray(data) ? data : [data];
-            if(allAds.length > 0 && allAds[0].active) {
-                renderAd(0);
-                if(allAds.length > 1) setInterval(() => { currentAdIndex = (currentAdIndex+1)%allAds.length; renderAd(currentAdIndex); }, 5000);
-            }
-        } catch(e) { console.log("Ads not loaded."); }
+    // --- Detect Location Logic ---
+    function detectLoc() {
+        const status = document.getElementById('locStatus');
+        if (!navigator.geolocation) {
+            alert("Aapka browser location support nahi karta.");
+            return;
+        }
+        status.innerText = "Finding your location...";
+        navigator.geolocation.getCurrentPosition((position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            userMapLink = `https://www.google.com/maps?q=${lat},${lon}`;
+            status.innerText = "✅ Location Locked Successfully!";
+        }, () => {
+            status.innerText = "❌ Location permission denied.";
+            alert("Kripya Location Permission On Karein.");
+        });
     }
 
-    function renderAd(idx) {
-        const container = document.getElementById('local-ad-container');
-        const ad = allAds[idx];
-        if(!ad || !ad.active) return;
-        container.style.opacity = '0';
-        setTimeout(() => {
-            container.style.display = 'block';
-            let imgHTML = ad.image ? `<img src="${ad.image}" class="ad-img">` : '';
-            container.innerHTML = `${imgHTML}<div>${ad.message}</div><a href="${ad.url}" class="ad-link">${ad.linkText}</a>`;
-            container.style.opacity = '1';
-        }, 500);
-    }
-
+    // --- Core App Logic ---
     async function loadRates() {
         try {
-            const res = await fetch('rates.json?v=' + Date.now());
-            AAJ_KA_RATE = await res.json();
-        } catch (e) { console.log("Using default rates."); }
-        updateUI();
+            const response = await fetch('rates.json?v=' + new Date().getTime());
+            AAJ_KA_RATE = await response.json();
+            updateUI();
+        } catch (error) {
+            console.error("Rates error:", error);
+        }
     }
 
     function updateUI(){
@@ -208,34 +196,32 @@
     function calc(){
         let m = document.getElementById('method').value; 
         let q = parseFloat(document.getElementById('qty').value) || 0; 
-        let u = document.getElementById('unit').value;
-        let area = document.getElementById('area').value;
-        if(deliveryCharge === 0) {
-            if(area === "Dubrajpur") deliveryCharge = 20;
-            else if(area === "Ilambazar") deliveryCharge = 40;
-        }
-        let itemPrice = (m === "weight") ? Math.round((u==="kg"?currentRate:currentRate/1000)*q) : q;
-        document.getElementById('total').innerText = "₹" + (itemPrice + deliveryCharge);
-        document.getElementById('sub-text').innerText = `Item: ₹${itemPrice} + Delivery: ₹${deliveryCharge}`;
-    }
-
-    function getGPS() {
-        const status = document.getElementById('distStatus');
-        status.innerText = "Finding location...";
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((pos) => {
-                const dist = calculateDistance(SHOP_LAT, SHOP_LON, pos.coords.latitude, pos.coords.longitude);
-                deliveryCharge = Math.max(20, Math.round(dist * 8));
-                status.innerText = `Distance: ${dist.toFixed(1)} KM | Delivery: ₹${deliveryCharge}`;
-                calc();
-            }, () => { status.innerText = "GPS Error!"; });
+        let u = document.getElementById('unit');
+        let sub = document.getElementById('sub-text');
+        
+        if(m === "weight"){
+            document.getElementById('optRs').style.display = 'none'; if(u.value==="rs") u.value="kg";
+            let itemPrice = Math.round((u.value==="kg"?currentRate:currentRate/1000)*q);
+            let finalBill = itemPrice + fixCharge; // Added 20 rupees
+            document.getElementById('total').innerText = "₹" + finalBill;
+            sub.innerText = `${q} ${u.value.toUpperCase()} + ₹${fixCharge} Delivery`;
+        } else {
+            document.getElementById('optRs').style.display = 'block'; u.value="rs";
+            let amountForChicken = q - fixCharge;
+            if(amountForChicken < 0) amountForChicken = 0;
+            let w = (amountForChicken/currentRate)*1000;
+            let wtText = w>=1000 ? (w/1000).toFixed(2)+" KG" : Math.round(w)+" GM";
+            document.getElementById('total').innerText = wtText;
+            sub.innerText = `₹${q} Total (Inc. ₹${fixCharge} Delivery)`;
         }
     }
 
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371; const dLat = (lat2-lat1)*Math.PI/180; const dLon = (lon2-lon1)*Math.PI/180;
-        const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
-        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+    function go(s){ 
+        if(s==2 && !selItem) { alert("Chicken type select karein!"); return; }
+        if(s==3 && (!document.getElementById('custName').value || !document.getElementById('custPhone').value)) { 
+            alert("Naam aur Mobile number bhariye!"); return; 
+        }
+        goToStep(s); 
     }
 
     function goToStep(s){
@@ -245,12 +231,6 @@
         for(let i=1; i<=s; i++) document.getElementById('dot' + i).classList.add('active');
     }
 
-    function go(s){ 
-        if(s==2 && !selItem) return alert("Chicken select karein!");
-        if(s==3 && (!document.getElementById('custName').value || !document.getElementById('custPhone').value)) return alert("Details bhariye!");
-        goToStep(s); 
-    }
-
     function updateV(){
         let a = document.getElementById('area').value; let v = document.getElementById('vill');
         v.innerHTML = '<option value="">-- Gaon --</option>';
@@ -258,50 +238,56 @@
     }
 
     function showSum(){
-        if(!document.getElementById('vill').value && deliveryCharge === 0) return alert("Location set karein!");
-        document.getElementById('summaryData').innerHTML = `👤 Name: ${document.getElementById('custName').value}<br>📞 Phone: ${document.getElementById('custPhone').value}<br>🍗 Item: ${selItem}<br>🚚 Delivery: ₹${deliveryCharge}<br>💰 Total: ${document.getElementById('total').innerText}`;
+        if(!document.getElementById('vill').value) { alert("Delivery location select karein!"); return; }
+        let q = document.getElementById('qty').value;
+        let u = document.getElementById('unit').value.toUpperCase();
+        let total = document.getElementById('total').innerText;
+        let orderDetail = document.getElementById('method').value === "money" ? total : q + " " + u;
+        
+        document.getElementById('summaryData').innerHTML = `
+            👤 Name: ${document.getElementById('custName').value}<br>
+            📞 Phone: ${document.getElementById('custPhone').value}<br>
+            🍗 Item: ${selItem}<br>
+            ⚖️ Order: ${orderDetail}<br>
+            💰 Final: ${total}<br>
+            🏠 Address: ${document.getElementById('vill').value}
+        `;
         document.getElementById('summaryModal').style.display = 'flex';
     }
 
     function closeModal(){ document.getElementById('summaryModal').style.display = 'none'; }
 
-    // --- WHATSAPP MESSAGE FIX (WITH DATE & DELIVERY CHARGE) ---
     function confirmAndSend(){
-        const name = document.getElementById('custName').value.trim();
+        const name = document.getElementById('custName').value;
         const phone = document.getElementById('custPhone').value;
-        const totalStr = document.getElementById('total').innerText;
-        const village = document.getElementById('vill').value || "GPS Location";
-        const landmark = document.getElementById('land').value || "None";
-        const quantity = document.getElementById('qty').value;
-        const unit = document.getElementById('unit').value;
-        
-        // Real-time Date and Time
-        const samay = new Date().toLocaleString('en-IN', { 
-            day:'2-digit', month:'short', year:'numeric', 
-            hour:'2-digit', minute:'2-digit', hour12:true 
-        });
+        const q = document.getElementById('qty').value;
+        const u = document.getElementById('unit').value.toUpperCase();
+        const total = document.getElementById('total').innerText;
+        const village = document.getElementById('vill').value;
+        const area = document.getElementById('area').value;
+        const land = document.getElementById('land').value;
+        const time = new Date().toLocaleString('en-IN', { hour12: true });
 
-        let msg = `*🐔 SYED POULTRY SHOP - ORDER*%0A` +
-                  `🗓️ *Time:* ${samay}%0A` +
-                  `----------------------------%0A` +
+        let orderText = document.getElementById('method').value === "money" ? total : `${q} ${u}`;
+        let finalPrice = document.getElementById('method').value === "money" ? '₹'+q : total;
+        
+        let msg = `*SYED NATURAL - NAYA ORDER*%0A` +
+                  `🗓️ ${time}%0A` +
+                  `--------------------%0A` +
                   `👤 *Name:* ${name}%0A` +
                   `📞 *Phone:* ${phone}%0A` +
                   `🍗 *Item:* ${selItem}%0A` +
-                  `⚖️ *Qty:* ${quantity} ${unit}%0A` +
-                  `🚚 *Delivery:* ₹${deliveryCharge}%0A` +
-                  `💰 *Total Bill: ${totalStr}*%0A` +
-                  `🏠 *Loc:* ${village}%0A` +
-                  `📍 *Landmark:* ${landmark}%0A` +
-                  `----------------------------%0A` +
-                  `_Order from Syed Natural App_`;
+                  `⚖️ *Order:* ${orderText}%0A` +
+                  `💰 *Bill:* ${finalPrice}%0A` +
+                  `🏠 *Location:* ${village}, ${area}%0A` +
+                  `📍 *Landmark:* ${land || 'N/A'}%0A` +
+                  `🗺️ *Google Maps:* ${userMapLink || 'Not Shared'}`;
         
         window.open(`https://wa.me/918637831146?text=${msg}`);
     }
 
-    window.onload = () => {
-        loadRates(); loadLocalAds();
-        setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleString(); }, 1000);
-    };
+    loadRates();
+    setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleString(); }, 1000);
 </script>
 </body>
 </html>
